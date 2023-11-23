@@ -14,11 +14,13 @@ The vision-based perception for autonomous driving has undergone a transformatio
 ## Demo
 
 ### nuScenes:
-![demo](./assets/nusc_snippet.gif)
+
+[comment]: <> (![demo]&#40;./assets/nusc_snippet.gif&#41;)
 ![legend](./assets/nusc_legend.png)
 
 ### SemanticKITTI:
-![demo](./assets/kitti_snippet.gif)
+
+[comment]: <> (![demo]&#40;./assets/kitti_snippet.gif&#41;)
 
 ## Benchmark Results
 LiDAR Segmentation on nuScenes test set:

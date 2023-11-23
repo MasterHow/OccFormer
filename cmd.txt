@@ -1,0 +1,107 @@
+#####################################################
+新建会话：tmux new -s SESSION-NAME
+杀死会话：tmux kill-session -t 0
+接入会话：tmux attach-session -t 0
+退出并杀死当前会话：ctrl+d
+
+# 远程连接tensorboard
+ssh -p 40612 -NL 8008:localhost:9009 root@ssh.atom.rk.supremind.info
+链接成功后会卡死，直接新开一个终端启动tb就好了
+
+# 打开tb
+source /opt/conda/bin/activate
+cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/work_dirs
+tensorboard --logdir='./' --port=9009
+http://127.0.0.1:8008/
+
+# 上传数据
+双卡工作台
+scp -P 40612 F:\OccFormer\ckpts\pretrain\efficientnet-b7_3rdparty_8xb32-aa_in1k_20220119-bf03951c.pth root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/MyCode-02/OccFormer/ckpts
+单卡工作台
+scp -P 42169 D:\MyProject\PyThon\SSC\mmdetection3d.zip root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/MyCode-02/mmdet3d
+
+# 下载数据
+双卡工作台
+scp -P 40612 root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/RgbSSC/SemanticKITTI/data_odometry_calib.zip D:\
+单卡工作台
+scp -P 42169 root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/RgbSSC/SemanticKITTI/data_odometry_calib.zip D:\
+
+# 清除显卡进程
+安装fuser：
+apt-get update -y
+apt-get install psmisc -y
+fuser -v /dev/nvidia* |awk '{for(i=1;i<=NF;i++)print "kill -9 " $i;}' | sh
+
+# 查看所有进程
+ps -aux
+
+# 查看服务器端口占用
+netstat -ap
+
+# SemanticKITTI SSC数据集分布
+训练集：01-10除了08，共3834帧点云; 不抽帧: 19130帧点云
+验证集：08，共815帧点云; 不抽帧: 4071帧点云
+测试集：11-21，3901帧点云; 不抽帧: 20351帧点云
+
+# SemanticPOSS SSC数据集分布
+训练集：01，03，04，05，共2488帧点云
+验证集：02，共500帧点云
+
+# 迭代删除
+rm -rf 路径
+
+# 对执行脚本赋予可读可写可执行权限
+sudo chmod 777 ×××
+
+# pip换源
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+
+# 查看磁盘空间
+df -h
+
+# 查看某个包的安装位置
+conda list mmcv-full | grep 'mmcv-full'
+或（针对pip安装的包）
+pip show mmcv-full
+
+# 杀死所有后台python程序
+kill -9 $(pgrep python)
+
+# 查看端口被哪个进程占用
+lsof -i:端口号
+
+# 创建软连接 （进入B访问到A）
+ln -s A B
+ln -s /SemanticKITTI/data_velodyne/velodyne /SemanticKITTI/dataset
+
+# pip下载某个安装包
+pip download -d /path/to/download/directory package_name
+pip download -d /workspace/mnt/storage/shihao/MyCode-02/OccFormer/pip_packages torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1 -f https://download.pytorch.org/whl/torch_stable.html
+pip download -d /workspace/mnt/storage/shihao/MyCode-02/OccFormer/pip_packages openmim
+
+# pip使用下载好的包离线安装
+pip install --no-index --find-links=/workspace/mnt/storage/shihao/MyCode-02/OccFormer/pip_packages torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1
+
+# 注意VoxFormer预处理了Calib.txt文件 增加了Tr
+
+# 环境配置
+镜像：reg.supremind.info/algorithmteam/supreimage/tools/smarttrafficintegrateddemo:pytorch1.9-trt7.2.2-ubuntu20.04-cuda11.2
+source /opt/conda/bin/activate
+conda create -n occformer python=3.7 -y
+conda activate occformer
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+pip install --no-index --find-links=/workspace/mnt/storage/shihao/MyCode-02/OccFormer/pip_packages torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1
+pip install --no-index --find-links=/workspace/mnt/storage/shihao/MyCode-02/OccFormer/pip_packages openmim
+mim install mmcv-full==1.4.0
+mim install mmdet==2.14.0
+mim install mmsegmentation==0.14.1
+cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/mmdetection3d
+pip install -r requirements/runtime.txt
+python setup.py install
+cd ..
+pip install -r docs/requirements.txt
+pip install yapf==0.40.1
+
+#####################################################
+# 复现VoxFormer-T
+bash ./tools/dist_train.sh ./projects/configs/occformer_kitti/occformer_kitti.py 8

@@ -213,8 +213,11 @@ model = dict(
 )
 
 dataset_type = 'CustomSemanticKITTILssDataset'
-data_root = 'data/SemanticKITTI'
-ann_file = 'data/SemanticKITTI/labels'
+data_root = '/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti'
+ann_file = '/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/labels'
+# default root
+# data_root = 'data/SemanticKITTI'
+# ann_file = 'data/SemanticKITTI/labels'
 
 bda_aug_conf = dict(
     rot_lim=(0, 0),
