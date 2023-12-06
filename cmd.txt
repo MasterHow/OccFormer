@@ -16,7 +16,7 @@ http://127.0.0.1:8008/
 
 # 上传数据
 双卡工作台
-scp -P 40612 F:\OccFormer\ckpts\pretrain\efficientnet-b7_3rdparty_8xb32-aa_in1k_20220119-bf03951c.pth root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/MyCode-02/OccFormer/ckpts
+scp -P 40612 F:\OccFormer\ckpts\pretrain\occformer_kitti.pth root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/MyCode-02/OccFormer/ckpts
 单卡工作台
 scp -P 42169 D:\MyProject\PyThon\SSC\mmdetection3d.zip root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/MyCode-02/mmdet3d
 
@@ -105,3 +105,7 @@ pip install yapf==0.40.1
 #####################################################
 # 复现VoxFormer-T
 bash ./tools/dist_train.sh ./projects/configs/occformer_kitti/occformer_kitti.py 8
+
+# 保存推理结果
+bash tools/dist_test.sh /workspace/mnt/storage/shihao/MyCode-02/OccFormer/projects/configs/occformer_kitti/occformer_kitti.py /workspace/mnt/storage/shihao/MyCode-02/OccFormer/ckpts/occformer_kitti.pth 1 --test-save /workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/model_infer/OccFormer
+使用官方预训练模型
