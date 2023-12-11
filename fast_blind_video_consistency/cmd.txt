@@ -1,0 +1,29 @@
+# 镜像
+reg.supremind.info/songqinglong/vehicleidentification:workspace_11.2
+
+# 环境配置[弃用]
+Q:>0.4.1 torch不兼容 A:外部引入ffi库的_wrap_function
+Q:>0.4.1 torch不兼容 A:import torch.utils.ffi 改成 import torch.utils.cpp_extension
+pip install cffi
+sh install.sh
+由于torch不再支持c语言拓展 弃用当前库 改为基于MMFlow实现
+
+# 环境配置
+pip install -U openmim
+mim install mmcv-full
+pip install mmflow
+
+# 上传数据
+scp -P 40272 E:\SSC_Datasets\bev_vis_zip\data_odometry_voxels.zip root@ssh.atom.ks.supremind.info:/workspace/mnt/storage/shihao/BEV_Flow/SemanticKITTI/data_odometry_voxels
+
+# 下载数据
+scp -P 40272 root@ssh.atom.ks.supremind.info:/workspace/mnt/storage/shihao/BEV_Flow/SemanticKITTI/flow_result.zip D:\
+
+# 清除显卡进程
+安装fuser： apt-get install psmisc
+fuser -v /dev/nvidia* |awk '{for(i=1;i<=NF;i++)print "kill -9 " $i;}' | sh
+
+#【1卡工作台-gpu0-tmux0】测试SemanticKITTI SSC时序性
+python compute_flow_occlusion_mmflow.py -list_dir /workspace/mnt/storage/shihao/BEV_Flow/SemanticKITTI/data_odometry_voxels/dataset/sequences/00/bev_vis/ -flow_dir /workspace/mnt/storage/shihao/BEV_Flow/SemanticKITTI/data_odometry_voxels/dataset/sequences/00/bev_flow_gt/
+
+python evaluate_WarpError_mmflow.py -list_dir /workspace/mnt/storage/shihao/BEV_Flow/SemanticKITTI/data_odometry_voxels/dataset/sequences/00/bev_vis/ -flow_dir /workspace/mnt/storage/shihao/BEV_Flow/SemanticKITTI/data_odometry_voxels/dataset/sequences/00/bev_flow_gt/
