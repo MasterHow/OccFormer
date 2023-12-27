@@ -55,8 +55,18 @@ if __name__ == "__main__":
     ### initialize FlowNet
     print('===> Initializing model from %s...' % opts.model)
     # model = networks.__dict__[opts.model](opts)
-    config_file = 'mmflow_cfgs/raft_8x2_100k_flyingthings3d_400x720.py'
-    checkpoint_file = 'mmflow_ckpt/raft_8x2_100k_flyingthings3d_400x720.pth'
+    # # RAFT
+    # config_file = 'mmflow_cfgs/raft_8x2_100k_flyingthings3d_400x720.py'
+    # checkpoint_file = 'mmflow_ckpt/raft_8x2_100k_flyingthings3d_400x720.pth'
+    # # FlowNet2
+    # config_file = 'mmflow_cfgs/flownet2_8x1_sfine_flyingthings3d_subset_384x768.py'
+    # checkpoint_file = 'mmflow_ckpt/flownet2_8x1_sfine_flyingthings3d_subset_384x768.pth'
+    # # PWC-Net
+    # config_file = 'mmflow_cfgs/pwcnet_8x1_sfine_flyingthings3d_subset_384x768.py'
+    # checkpoint_file = 'mmflow_ckpt/pwcnet_8x1_sfine_flyingthings3d_subset_384x768.pth'
+    # GMA
+    config_file = 'mmflow_cfgs/gma_8x2_120k_flyingthings3d_400x720.py'
+    checkpoint_file = 'mmflow_ckpt/gma_8x2_120k_flyingthings3d_400x720.pth'
     device = 'cuda:0'
     # init a model
     model = init_model(config_file, checkpoint_file, device=device)

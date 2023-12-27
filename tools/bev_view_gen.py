@@ -15,7 +15,7 @@ def parse_args():
   parser.add_argument(
     '--dset_root',
     dest='dataset_root',
-    default='E:\\SSC_Datasets\\data_odometry_voxels\\',
+    default='/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/',
     metavar='DATASET',
     help='path to dataset root folder',
     type=str,
@@ -99,7 +99,10 @@ colormap = SemanticKittiIO.get_cmap_semanticKITTI20()
 
 # val
 sequences_raw = [sequences_raw[8]]
+# sequences_raw = [sequences_raw[8]]
 sequences = [sequences[8]]
+# 对于预测 只有08序列
+pass
 
 assert len(sequences) > 0, 'Error, no sequences on selected dataset root path'
 
@@ -107,8 +110,11 @@ scale_divide = 1    # 尺度
 
 for sequence_raw, sequence in zip(sequences_raw, sequences):
 
+    print('sequence path:', sequence)
     # LABEL_paths = sorted(glob(os.path.join(sequence, 'voxels', '*.label')))       # gt
-    LABEL_paths = sorted(glob(os.path.join(sequence, 'predictions', '*.label')))     # pseudo
+    # LABEL_paths = sorted(glob(os.path.join(sequence, 'predictions', '*.label')))     # pseudo
+    LABEL_paths = sorted(glob(os.path.join(sequence, 'sphere-10-01', 'predictions_dist_refine_15', '*.label')))     # pseudo refined
+    # LABEL_paths = sorted(glob(os.path.join(sequence, 'gt_refine_2', '*.label')))  # gt refined
     INVALID_paths = sorted(glob(os.path.join(sequence_raw, 'voxels', '*.invalid')))
     out_dir = os.path.join(sequence, 'bev_vis')
     # out_dir = os.path.join(sequence, 'bev_vis_pseudo')
@@ -127,7 +133,9 @@ for sequence_raw, sequence in zip(sequences_raw, sequences):
         # 使用倒序循环防止索引错乱
         del LABEL_paths[i]
 
-    assert len(LABEL_paths) == len(INVALID_paths)
+    print('len(LABEL_paths):', str(len(LABEL_paths)))
+    print('len(INVALID_paths):', str(len(INVALID_paths)))
+    # assert len(LABEL_paths) == len(INVALID_paths)
 
     for i in range(len(LABEL_paths)):
 

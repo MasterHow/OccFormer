@@ -16,8 +16,8 @@ source /opt/conda/bin/activate
 conda activate mayavi
 cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer
 
-# 使用变量来简化命令
-#xvfb-run -a python tools/bev_view_gen.py --dset_root=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti --pred_root="$predict_root"
+# 使用变量来简化命令 bev可视化
+xvfb-run -a python tools/bev_view_gen.py --dset_root=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti --pred_root="$predict_root"
 
 conda deactivate
 conda activate mmflow
@@ -92,5 +92,5 @@ python evaluate_WarpError_mmflow.py -list_dir "$list_dir" -flow_dir "$flow_dir"
 
 # 还原工作目录
 cd "$flow_dir"
-#rm -rf fw_flow bw_flow fw_flow_rgb bw_flow_rgb fw_occlusion bw_occlusion
+rm -rf fw_flow bw_flow fw_flow_rgb bw_flow_rgb fw_occlusion bw_occlusion
 cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/

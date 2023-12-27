@@ -101,6 +101,7 @@ python setup.py install
 cd ..
 pip install -r docs/requirements.txt
 pip install yapf==0.40.1
+pip install volumentations-3D # 安装volumentations用于体素数据增强
 
 # 安装mayavi来可视化点云 （Python3.7下安装）
 conda create -n mayavi python=3.7 -y
@@ -164,3 +165,9 @@ bash tools/eval_warp.sh /workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kit
 # 生成所有gt trainval的bev光流，并评估seq08的bev warp误差
 bash tools/eval_warp.sh /workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset
 已修正相机视图为平行投影，并去除黑边
+
+# 训练SCRefiner-base
+source /opt/conda/bin/activate
+conda activate occformer
+cd /workspace/mnt/storage/shihao/MyCode-02/SCFormer
+python SCFormer/train_ddp.py --config SSC_configs/screfiner/SCRefiner-base.yaml

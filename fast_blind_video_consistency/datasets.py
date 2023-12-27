@@ -88,7 +88,7 @@ class MultiFramesDataset(data.Dataset):
         ## sample from T to T + #sample_frames - 1
         frame_i = []
         frame_p = []
-        for t in range(T, T + self.opts.sample_frames):
+        for t in range(T, T + self.opts.sample_frames):     # 训练默认sample_frames=11
             frame_i.append( utils.read_img(os.path.join(input_dir, video, "%05d.jpg" %t) ) )
             frame_p.append( utils.read_img(os.path.join(process_dir, video, "%05d.jpg" %t) ) )
 
