@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
-import collections 
+import collections
+import os
 
 from mmdet.models import DETECTORS
 from mmcv.runner import force_fp32
@@ -207,7 +208,44 @@ class OccupancyFormer(BEVDepth):
         return self.simple_test(img_metas, img_inputs, **kwargs)
     
     def simple_test(self, img_metas, img=None, rescale=False, points_occ=None, gt_occ=None, points_uv=None):
-        voxel_feats, img_feats, depth = self.extract_feat(points=None, img=img, img_metas=img_metas)        
+        voxel_feats, img_feats, depth = self.extract_feat(points=None, img=img, img_metas=img_metas)
+
+        # # 打印图像元数据和特征形状
+        # # print("Image Metadata:", img_metas)
+        # print("Image Sequence:", img_metas[0]['sequence'])
+        # print("Image ID:", img_metas[0]['frame_id'])
+        # # print("Voxel Features Shape:", voxel_feats[0].shape if voxel_feats is not None else "None")
+        # # 1 192 128 128 16; 1 192 64 64 8; 1 192 32 32 4; 1 192 16 16 2
+        # # print("Image Features Shape:", img_feats.shape if img_feats is not None else "None")
+        # # print("Depth Shape:", depth.shape if depth is not None else "None")
+        #
+        # # 保存voxel_feats
+        # if voxel_feats is not None:
+        #     # 移除第一个维度 节省空间保存特征
+        #     # voxel_feats_to_save = voxel_feats[0].squeeze(0).cpu().numpy().astype(np.float16)
+        #     voxel_feats_to_save_4_1 = voxel_feats[1].squeeze(0).cpu().numpy().astype(np.float16)
+        #     voxel_feats_to_save_8_1 = voxel_feats[2].squeeze(0).cpu().numpy().astype(np.float16)
+        #     voxel_feats_to_save_16_1 = voxel_feats[3].squeeze(0).cpu().numpy().astype(np.float16)
+        #
+        #     # 构建保存路径
+        #     save_dir = f"/workspace/mnt/storage/shihao/SSC/SemanticKITTI/src/model_infer/OccFormer/feats/sequences/{img_metas[0]['sequence']}"
+        #     # save_path = os.path.join(save_dir, 'img_feat', f"{img_metas[0]['frame_id']}.npy")
+        #     save_path_4_1 = os.path.join(save_dir, 'img_feat', f"{img_metas[0]['frame_id']}_4_1.npy")
+        #     save_path_8_1 = os.path.join(save_dir, 'img_feat', f"{img_metas[0]['frame_id']}_8_1.npy")
+        #     save_path_16_1 = os.path.join(save_dir, 'img_feat', f"{img_metas[0]['frame_id']}_16_1.npy")
+        #
+        #     # 确保目录存在
+        #     os.makedirs(save_dir, exist_ok=True)
+        #     os.makedirs(os.path.join(save_dir, 'img_feat'), exist_ok=True)
+        #     os.makedirs(os.path.join(save_dir, 'confidence'), exist_ok=True)
+        #
+        #     # # 保存特征
+        #     # np.savez_compressed(save_path, voxel_feats_to_save)
+        #     # np.save(save_path, voxel_feats_to_save)
+        #     np.save(save_path_4_1, voxel_feats_to_save_4_1)
+        #     np.save(save_path_8_1, voxel_feats_to_save_8_1)
+        #     np.save(save_path_16_1, voxel_feats_to_save_16_1)
+
         output = self.pts_bbox_head.simple_test(
             voxel_feats=voxel_feats,
             points=points_occ,
@@ -215,7 +253,25 @@ class OccupancyFormer(BEVDepth):
             img_feats=img_feats,
             points_uv=points_uv,
         )
-        
+
+        # # 计算并保存置信度边距(confidence margin, 最大置信度和第二置信度的差异)
+        # # 获取每个位置的前两个最高置信度值
+        # top_confidences, _ = output['output_voxels'][0].topk(2, dim=1)
+        #
+        # # 最大置信度（第一大）
+        # max_confidence = top_confidences[:, 0, :, :, :]
+        #
+        # # 第二大置信度
+        # second_max_confidence = top_confidences[:, 1, :, :, :]
+        #
+        # # 计算置信度差异
+        # confidence_margin = max_confidence - second_max_confidence
+        #
+        # # 保存置信度差异
+        # confidence_margin_to_save = confidence_margin.squeeze(0).cpu().numpy().astype(np.float16)
+        # save_path_conf = os.path.join(save_dir, 'confidence', f"{img_metas[0]['frame_id']}.npy")
+        # np.save(save_path_conf, confidence_margin_to_save)
+
         # evaluate nusc lidar-seg
         if output['output_points'] is not None and points_occ is not None:
             output['output_points'] = torch.argmax(output['output_points'][:, 1:], dim=1) + 1

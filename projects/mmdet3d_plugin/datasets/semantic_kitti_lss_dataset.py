@@ -20,6 +20,16 @@ class CustomSemanticKITTILssDataset(SemanticKITTIDataset):
         self.camera_map = {'left': '2', 'right': '3'}
         self.camera_used = [self.camera_map[camera] for camera in camera_used]
         self.multi_scales = ["1_1", "1_2", "1_4", "1_8", "1_16"]
+
+        # 临时增加 用于测试数据闭环
+        try:
+            self.rewrite_test_gt = kwargs['rewrite_test_gt']
+            self.rewrite_test_gt_dir = kwargs['rewrite_test_gt_dir']
+            del kwargs['rewrite_test_gt']
+            del kwargs['rewrite_test_gt_dir']
+        except:
+            self.rewrite_test_gt = False
+            pass
         
         self.load_continuous = load_continuous
         self.splits = {
@@ -28,6 +38,8 @@ class CustomSemanticKITTILssDataset(SemanticKITTIDataset):
             "trainval": ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"],
             "test": ["08"],
             "test-submit": ["11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"],
+            "traintest": ["00", "01", "02", "03", "04", "05", "06", "07", "09", "10", "11", "12", "13", "14", "15",
+                          "16", "17", "18", "19", "20", "21"],      # 我们增加的，使用真值train+伪标签test训练 用于验证数据闭环
         }
         
         self.sequences = self.splits[split]
@@ -80,7 +92,17 @@ class CustomSemanticKITTILssDataset(SemanticKITTIDataset):
             proj_matrix_2 = P2 @ T_velo_2_cam
             proj_matrix_3 = P3 @ T_velo_2_cam
 
-            voxel_base_path = os.path.join(self.ann_file, sequence)
+            # 是否加载测试集伪标签
+            if self.rewrite_test_gt:
+                if sequence in self.splits["train"]:
+                    # 训练集仍然使用人工标注
+                    voxel_base_path = os.path.join(self.ann_file, sequence)
+                elif sequence in self.splits["test-submit"]:
+                    # 加载测试集的伪标签
+                    voxel_base_path = os.path.join(self.rewrite_test_gt_dir, sequence)
+            else:
+                voxel_base_path = os.path.join(self.ann_file, sequence)
+
             img_base_path = os.path.join(self.data_root, "dataset", "sequences", sequence)
                         
             if self.load_continuous:
@@ -146,7 +168,7 @@ class CustomSemanticKITTILssDataset(SemanticKITTIDataset):
 
     def get_ann_info(self, index):
         info = self.data_infos[index]['voxel_path']
-        return None if info is None else np.load(info)
+        return None if info is None else np.load(info)      # 256 * 256 * 32
 
     def get_data_info(self, index):
         info = self.data_infos[index]

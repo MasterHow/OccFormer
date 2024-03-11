@@ -4,12 +4,16 @@
 接入会话：tmux attach-session -t 0
 退出并杀死当前会话：ctrl+d
 
+# 启动ssh会话
+ssh -p 40612 root@ssh.atom.rk.supremind.info
+
 # 远程连接tensorboard
 ssh -p 40612 -NL 8008:localhost:9009 root@ssh.atom.rk.supremind.info
 链接成功后会卡死，直接新开一个终端启动tb就好了
 
 # 打开tb
 source /opt/conda/bin/activate
+conda activate occformer
 cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/work_dirs
 tensorboard --logdir='./' --port=9009
 http://127.0.0.1:8008/
@@ -128,12 +132,34 @@ pip install --no-index --find-links=/workspace/mnt/storage/shihao/MyCode-02/OccF
 mim install mmcv-full
 pip install mmflow
 
+# 环境配置 自定义镜像
+reg.supremind.info/algorithmteam/supreimage/traffic/bevdetection:scformer
+source /opt/conda/bin/activate
+conda activate occformer
+mim install mmdet==2.14.0
+mim install mmsegmentation==0.14.1
+cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/mmdetection3d
+pip install -r requirements/runtime.txt
+python setup.py install
+cd ..
+pip install -r docs/requirements.txt
+pip install yapf==0.40.1
+
+# 上传数据集
+smmc ls ks/personal/shihao
+smmc cp -r /workspace/mnt/storage/shihao/Swap-2GPU/SemanticKITTI/model_infer/OccFormer-DataClosure ks/personal/shihao/PL
+
+# 下载数据集
+smmc cp -r ks/personal/shihao/PL /workspace/mnt/storage/shihao/Data-Yara/PL
 #####################################################
-# 复现VoxFormer-T
+# 复现OccFormer
 bash ./tools/dist_train.sh ./projects/configs/occformer_kitti/occformer_kitti.py 8
 
 # 保存推理结果
-bash tools/dist_test.sh /workspace/mnt/storage/shihao/MyCode-02/OccFormer/projects/configs/occformer_kitti/occformer_kitti.py /workspace/mnt/storage/shihao/MyCode-02/OccFormer/ckpts/occformer_kitti.pth 1 --test-save /workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/model_infer/OccFormer
+source /opt/conda/bin/activate
+conda activate occformer
+cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer
+bash tools/dist_test.sh /workspace/mnt/storage/shihao/MyCode-02/OccFormer/projects/configs/occformer_kitti/occformer_kitti.py /workspace/mnt/storage/shihao/MyCode-02/OccFormer/ckpts/occformer_kitti.pth 1 --test-save /workspace/mnt/storage/shihao/SSC/SemanticKITTI/src/model_infer/OccFormer/feats
 使用官方预训练模型
 
 # 生成bev视角图
@@ -171,3 +197,16 @@ source /opt/conda/bin/activate
 conda activate occformer
 cd /workspace/mnt/storage/shihao/MyCode-02/SCFormer
 python SCFormer/train_ddp.py --config SSC_configs/screfiner/SCRefiner-base.yaml
+
+# 保存推理结果 只保存08序列
+source /opt/conda/bin/activate
+conda activate occformer
+cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer
+bash tools/dist_test.sh /workspace/mnt/storage/shihao/MyCode-02/OccFormer/projects/configs/occformer_kitti/occformer_kitti.py /workspace/mnt/storage/shihao/MyCode-02/OccFormer/work_dirs/occformer_kitti/best_semkitti_SSC_mIoU_epoch_23.pth 1 --test-save /workspace/mnt/storage/shihao/Swap/SemanticKITTI/model_infer/OccFormer_human-label
+使用复现的模型
+
+# 训练auto label数据
+bash ./tools/dist_train.sh ./projects/configs/occformer_kitti/occformer_kitti_debug.py 2
+
+# 由于机器不够了 使用两卡工作台训练auto label数据
+bash ./tools/dist_train.sh ./projects/configs/occformer_kitti/occformer_kitti_PL-VoxOff-bs2.py 2

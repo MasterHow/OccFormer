@@ -3,6 +3,11 @@ _base_ = [
     '../_base_/default_runtime.py'
 ]
 
+# 重写test真值路径，用于测试auto labeling效果
+rewrite_test_gt = True
+rewrite_test_gt_dir = \
+    '/workspace/mnt/storage/shihao/Swap-2GPU/SemanticKITTI/model_infer/OccFormer-DataClosure/Pseudo-Labels/VoxFormer/offboard/npy/labels'
+
 sync_bn = True
 plugin = True
 plugin_dir = "projects/mmdet3d_plugin/"
@@ -279,10 +284,12 @@ data = dict(
         classes=class_names,
         modality=input_modality,
         test_mode=False,
-        split='train',
+        split='traintest',
         camera_used=camera_used,
         occ_size=occ_size,
         pc_range=point_cloud_range,
+        rewrite_test_gt = rewrite_test_gt,
+        rewrite_test_gt_dir = rewrite_test_gt_dir,
     ),
     val=test_config,
     test=test_config,

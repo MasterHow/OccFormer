@@ -120,7 +120,7 @@ if __name__ == '__main__':
         # LABEL_paths = sorted(glob(os.path.join(sequence, 'voxels', '*.label')))       # gt
         # LABEL_paths = sorted(glob(os.path.join(sequence, 'predictions', '*.label')))     # pseudo
         LABEL_paths = sorted(glob(os.path.join(sequence,
-                                               'sphere-10-01-class0-frust', 'predictions_dist_refine_2', '*.label')))     # pseudo refined
+                                               'class0-frust-001', 'predictions_dist_refine_15', '*.label')))     # pseudo refined
         # LABEL_paths = sorted(glob(os.path.join(sequence, 'gt_refine_2', '*.label')))  # gt refined
         INVALID_paths = sorted(glob(os.path.join(sequence_raw, 'voxels', '*.invalid')))
         out_dir = os.path.join(sequence, 'bev_vis')

@@ -17,7 +17,9 @@ class sem_kitti_cfg:
         self.parser.add_argument('--kitti_root', type=str, default=None)
         self.parser.add_argument('--kitti_preprocess_root', type=str, default=None)
         self.parser.add_argument('--data_info_path', type=str, default=None)
-    
+        self.parser.add_argument('--test_split', action='store_true',
+                                 help='preprocess for test split (auto labeling)')
+
     def parse(self):
         self.cfg = self.parser.parse_args()
         return self.cfg                            
@@ -95,19 +97,34 @@ def majority_pooling(grid, k_size=2):
 
 def main(cfg):
     scene_size = (256, 256, 32)
-    sequences = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+    if not cfg.test_split:
+        sequences = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]    # train val
+    else:
+        sequences = ["11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"]      # test
+
     remap_lut = SemanticKittiIO.get_remap_lut(cfg.data_info_path)
 
     for sequence in sequences:
-        sequence_path = os.path.join(
-            cfg.kitti_root, "dataset", "sequences", sequence
-        )
-        label_paths = sorted(
-            glob.glob(os.path.join(sequence_path, "voxels", "*.label"))
-        )
-        invalid_paths = sorted(
-            glob.glob(os.path.join(sequence_path, "voxels", "*.invalid"))
-        )
+        if not cfg.test_split:
+            sequence_path = os.path.join(
+                cfg.kitti_root, "dataset", "sequences", sequence
+            )
+            label_paths = sorted(
+                glob.glob(os.path.join(sequence_path, "voxels", "*.label"))
+            )
+        else:
+            sequence_path = os.path.join(
+                cfg.kitti_root, "sequences", sequence
+            )
+            label_paths = sorted(
+                glob.glob(os.path.join(sequence_path, "predictions", "*.label"))
+            )
+
+        if not cfg.test_split:
+            invalid_paths = sorted(
+                glob.glob(os.path.join(sequence_path, "voxels", "*.invalid"))
+            )
+
         out_dir = os.path.join(cfg.kitti_preprocess_root, "labels", sequence)
         os.makedirs(out_dir, exist_ok=True)
 
@@ -119,13 +136,19 @@ def main(cfg):
             frame_id, extension = os.path.splitext(os.path.basename(label_paths[i]))
 
             LABEL = SemanticKittiIO._read_label_SemKITTI(label_paths[i])
-            INVALID = SemanticKittiIO._read_invalid_SemKITTI(invalid_paths[i])
+
+            if not cfg.test_split:
+                INVALID = SemanticKittiIO._read_invalid_SemKITTI(invalid_paths[i])
+
             LABEL = remap_lut[LABEL.astype(np.uint16)].astype(
                 np.float32
             )  # Remap 20 classes semanticKITTI SSC
-            LABEL[
-                np.isclose(INVALID, 1)
-            ] = 255  # Setting to unknown all voxels marked on invalid mask...
+
+            if not cfg.test_split:
+                LABEL[
+                    np.isclose(INVALID, 1)
+                ] = 255  # Setting to unknown all voxels marked on invalid mask...
+
             LABEL = LABEL.reshape([256, 256, 32])
 
             for scale in downscaling:
