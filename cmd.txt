@@ -210,3 +210,6 @@ bash ./tools/dist_train.sh ./projects/configs/occformer_kitti/occformer_kitti_de
 
 # 由于机器不够了 使用两卡工作台训练auto label数据
 bash ./tools/dist_train.sh ./projects/configs/occformer_kitti/occformer_kitti_PL-VoxOff-bs2.py 2
+
+# 保存auto-label的validation序列
+bash tools/dist_test.sh /workspace/mnt/storage/shihao/MyCode-02/OccFormer/projects/configs/occformer_kitti/occformer_kitti.py /workspace/mnt/storage/shihao/MyCode-02/OccFormer/work_dirs/occformer_kitti_PL-VoxOff-bs2/best_semkitti_SSC_mIoU_epoch_9.pth 1 --test-save /workspace/mnt/storage/shihao/Swap/SemanticKITTI/model_infer/OccFormer-PL-VoxOff-bs2
