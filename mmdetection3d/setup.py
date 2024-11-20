@@ -41,6 +41,10 @@ def make_cuda_ext(name,
     define_macros = []
     extra_compile_args = {'cxx': [] + extra_args}
 
+    # Win 基于VS2019编译
+    # 在 extra_include_path 的第一位插入 14.29 的路径
+    extra_include_path.insert(0, "E:/Softwares/VS/VC/Tools/MSVC/14.29.30133/include")
+
     if torch.cuda.is_available() or os.getenv('FORCE_CUDA', '0') == '1':
         define_macros += [('WITH_CUDA', None)]
         extension = CUDAExtension
@@ -48,6 +52,9 @@ def make_cuda_ext(name,
             '-D__CUDA_NO_HALF_OPERATORS__',
             '-D__CUDA_NO_HALF_CONVERSIONS__',
             '-D__CUDA_NO_HALF2_OPERATORS__',
+            '-allow-unsupported-compiler',
+            # '-ccbin=E:/Softwares/VS/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64',
+            '-std=c++17'
         ]
         sources += sources_cuda
     else:

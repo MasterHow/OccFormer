@@ -95,7 +95,7 @@ pip install --no-index --find-links=/workspace/mnt/storage/shihao/MyCode-02/OccF
 mim install mmcv-full==1.4.0
 mim install mmdet==2.14.0
 mim install mmsegmentation==0.14.1
-cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/mmdetection3d
+cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/mmdetection3d          # Finished processing dependencies for mmdet3d==0.17.1
 pip install -r requirements/runtime.txt
 python setup.py install
 cd ..
@@ -127,6 +127,30 @@ pip install -U openmim
 pip install --no-index --find-links=/workspace/mnt/storage/shihao/MyCode-02/OccFormer/pip_packages torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1
 mim install mmcv-full
 pip install mmflow
+
+#######################Quad##########################
+# tensorboard win
+conda activate occformer
+tensorboard --logdir ./ --port=9009
+http://localhost:9009/
+
+# 使用cuda11.3
+set CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3
+set PATH=%CUDA_HOME%\bin;%PATH%
+
+# 使用cuda12.3
+set CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3
+set PATH=%CUDA_HOME%\bin;%PATH%
+
+# 训练Quad
+python train.py --config projects/configs/occformer_quad/occformer_quad.py
+
+# test Quad
+python test.py projects/configs/occformer_quad/occformer_quad.py work_dirs/occformer_quad/best_semkitti_SSC_mIoU_epoch_6.pth --eval=bbox
+
+
+
+
 
 #####################################################
 # 复现VoxFormer-T

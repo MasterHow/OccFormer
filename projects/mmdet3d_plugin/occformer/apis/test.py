@@ -35,7 +35,8 @@ def custom_single_gpu_test(model, data_loader, show=False, out_dir=None, show_sc
     
     # evaluate ssc
     is_semkitti = hasattr(dataset, 'camera_used')
-    ssc_metric = SSCMetrics().cuda()
+    # ssc_metric = SSCMetrics().cuda()
+    ssc_metric = SSCMetrics(quad_ssc=True).cuda()
     logger.info(parameter_count_table(model, max_depth=4))
     
     batch_size = 1
@@ -128,7 +129,8 @@ def custom_multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False, pr
         prog_bar = mmcv.ProgressBar(len(dataset))
         
     ssc_results = []
-    ssc_metric = SSCMetrics().cuda()
+    # ssc_metric = SSCMetrics().cuda()
+    ssc_metric = SSCMetrics(quad_ssc=True).cuda()
     is_semkitti = hasattr(dataset, 'camera_used')
     
     time.sleep(2)  # This line can prevent deadlock problem in some cases.

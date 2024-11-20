@@ -19,6 +19,7 @@ from .base.mmdet_utils import (sample_valid_coords_with_frequencies,
 from .base.anchor_free_head import AnchorFreeHead
 from .base.maskformer_head import MaskFormerHead
 from projects.mmdet3d_plugin.utils.semkitti import semantic_kitti_class_frequencies
+from projects.mmdet3d_plugin.utils.quadssc import quadssc_class_frequencies
 import pdb
 
 
@@ -132,7 +133,9 @@ class Mask2FormerOccHead(MaskFormerHead):
 
         # create class_weights for semantic_kitti
         self.class_weight = loss_cls.class_weight
-        kitti_class_weights = 1 / np.log(semantic_kitti_class_frequencies)
+        # kitti_class_weights = 1 / np.log(semantic_kitti_class_frequencies)
+        # Hao: todo
+        kitti_class_weights = 1 / np.log(quadssc_class_frequencies)
         norm_kitti_class_weights = kitti_class_weights / kitti_class_weights[0]
         norm_kitti_class_weights = norm_kitti_class_weights.tolist()
         # append the class_weight for background
@@ -255,7 +258,6 @@ class Mask2FormerOccHead(MaskFormerHead):
         num_queries = cls_score.shape[0]
         num_gts = gt_labels.shape[0]
         gt_labels = gt_labels.long()
-        
         # create sampling weights
         point_indices, point_coords = sample_valid_coords_with_frequencies(self.num_points, 
                 gt_labels=gt_labels, gt_masks=gt_masks, sample_weights=self.sample_weights)

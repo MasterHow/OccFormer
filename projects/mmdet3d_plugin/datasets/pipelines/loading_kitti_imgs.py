@@ -68,10 +68,21 @@ class LoadMultiViewImageFromFiles_SemanticKitti(object):
         fH, fW = self.data_config['input_size']
         
         if self.is_train:
-            resize = float(fW)/float(W)
-            resize += np.random.uniform(*self.data_config['resize'])
-            resize_dims = (int(W * resize), int(H * resize))
+            # resize = float(fW)/float(W)
+            # resize += np.random.uniform(*self.data_config['resize'])
+            # resize_dims = (int(W * resize), int(H * resize))
+            # newW, newH = resize_dims
+
+            # Hao: x和y的缩放比例不一定完全一样，因此修改
+            # 计算宽度和高度的缩放比例
+            resize_w = float(fW) / float(W)
+            resize_h = float(fH) / float(H)
+            resize_w += np.random.uniform(*self.data_config['resize'])
+            resize_h += np.random.uniform(*self.data_config['resize'])
+            resize_dims = (int(W * resize_w), int(H * resize_h))
             newW, newH = resize_dims
+            resize = resize_h        # todo 临时返回一个resize 后面需要调整 因为resize参数在增强中影响旋转
+
             crop_h = int((1 - np.random.uniform(*self.data_config['crop_h'])) * newH) - fH
             crop_w = int(np.random.uniform(0, max(0, newW - fW)))
             crop = (crop_w, crop_h, crop_w + fW, crop_h + fH)
@@ -79,13 +90,27 @@ class LoadMultiViewImageFromFiles_SemanticKitti(object):
             rotate = np.random.uniform(*self.data_config['rot'])
         
         else:
-            resize = float(fW) / float(W)
+            # Hao: x和y的缩放比例不一定完全一样，因此修改
+            # 计算宽度和高度的缩放比例
+            resize_w = float(fW) / float(W)
+            resize_h = float(fH) / float(H)
+            resize_w += np.random.uniform(*self.data_config['resize'])
+            resize_h += np.random.uniform(*self.data_config['resize'])
+            resize_dims = (int(W * resize_w), int(H * resize_h))
+            newW, newH = resize_dims
+            resize = resize_h
             resize += self.data_config.get('resize_test', 0.0)
             if scale is not None:
                 resize = scale
-            
-            resize_dims = (int(W * resize), int(H * resize))
-            newW, newH = resize_dims
+
+            # # default
+            # resize = float(fW) / float(W)
+            # resize += self.data_config.get('resize_test', 0.0)
+            # if scale is not None:
+            #     resize = scale
+            # resize_dims = (int(W * resize), int(H * resize))
+            # newW, newH = resize_dims
+
             crop_h = int((1 - np.mean(self.data_config['crop_h'])) * newH) - fH
             crop_w = int(max(0, newW - fW) / 2)
             crop = (crop_w, crop_h, crop_w + fW, crop_h + fH)

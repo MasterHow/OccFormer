@@ -85,4 +85,58 @@ class OccDistEvalHook(BaseDistEvalHook):
 
             if self.save_best:
                 self._save_ckpt(runner, key_score)
+
+
+class OccEvalHook(BaseEvalHook):
+    """Hao: A hook to evaluate the model during training for single GPU setup."""
+
+    def __init__(self, *args, dynamic_intervals=None, **kwargs):
+        super(OccEvalHook, self).__init__(*args, **kwargs)
+        self.use_dynamic_intervals = dynamic_intervals is not None
+        if self.use_dynamic_intervals:
+            self.dynamic_milestones, self.dynamic_intervals = \
+                self._calc_dynamic_intervals(self.interval, dynamic_intervals)
+
+    def _calc_dynamic_intervals(self, start_interval, dynamic_interval_list):
+        assert mmcv.is_list_of(dynamic_interval_list, tuple)
+
+        dynamic_milestones = [0]
+        dynamic_milestones.extend(
+            [dynamic_interval[0] for dynamic_interval in dynamic_interval_list])
+        dynamic_intervals = [start_interval]
+        dynamic_intervals.extend(
+            [dynamic_interval[1] for dynamic_interval in dynamic_interval_list])
+        return dynamic_milestones, dynamic_intervals
+
+    def _decide_interval(self, runner):
+        if self.use_dynamic_intervals:
+            progress = runner.epoch if self.by_epoch else runner.iter
+            step = bisect.bisect(self.dynamic_milestones, (progress + 1))
+            # Dynamically modify the evaluation interval
+            self.interval = self.dynamic_intervals[step - 1]
+
+    def before_train_epoch(self, runner):
+        self._decide_interval(runner)
+        super().before_train_epoch(runner)
+
+    def before_train_iter(self, runner):
+        self._decide_interval(runner)
+        super().before_train_iter(runner)
+
+    def _do_evaluate(self, runner):
+        if not self._should_evaluate(runner):
+            return
+
+        from projects.mmdet3d_plugin.occformer.apis.test import custom_single_gpu_test
+
+        results = custom_single_gpu_test(
+            runner.model,
+            self.dataloader)
+
+        runner.log_buffer.output['eval_iter_num'] = len(self.dataloader)
+        key_score = self.evaluate(runner, results)
+
+        if self.save_best:
+            self._save_ckpt(runner, key_score)
+
   

@@ -385,6 +385,13 @@ class ASPP(nn.Module):
         x2 = self.aspp2(x)
         x3 = self.aspp3(x)
         x4 = self.aspp4(x)
+
+        # Hao: todo 检查BatchNorm层在batch_size=1时是否应该关闭
+        if x.shape[0] == 1:
+            self.global_avg_pool[2].train(False)  # 关闭BatchNorm训练 用于bs=1的调试
+        else:
+            self.global_avg_pool[2].train(True)  # 开启BatchNorm训练
+
         x5 = self.global_avg_pool(x)
         x5 = F.interpolate(x5,
                            size=x4.size()[2:],
@@ -493,6 +500,12 @@ class DepthNet(nn.Module):
         )
 
     def forward(self, x, mlp_input):
+        # Hao: todo Check if batch size is 1 and set BatchNorm to evaluation mode
+        if mlp_input.shape[0] == 1:
+            self.bn.train(False)
+        else:
+            self.bn.train(True)
+
         mlp_input = self.bn(mlp_input.reshape(-1, mlp_input.shape[-1]))
         x = self.reduce_conv(x)
         context_se = self.context_mlp(mlp_input)[..., None, None]

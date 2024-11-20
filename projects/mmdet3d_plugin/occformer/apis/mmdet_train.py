@@ -23,7 +23,7 @@ from mmdet.utils import get_root_logger
 import time
 import os.path as osp
 from projects.mmdet3d_plugin.datasets.builder import build_dataloader
-from projects.mmdet3d_plugin.core.evaluation.eval_hooks import OccDistEvalHook
+from projects.mmdet3d_plugin.core.evaluation.eval_hooks import OccDistEvalHook, OccEvalHook
 from projects.mmdet3d_plugin.datasets import custom_build_dataset
 
 def custom_train_detector(model,
@@ -175,7 +175,8 @@ def custom_train_detector(model,
         eval_cfg = cfg.get('evaluation', {})
         eval_cfg['by_epoch'] = cfg.runner['type'] != 'IterBasedRunner'
         eval_cfg['jsonfile_prefix'] = osp.join('val', cfg.work_dir, time.ctime().replace(' ','_').replace(':','_'))
-        eval_hook = OccDistEvalHook if distributed else EvalHook
+        # eval_hook = OccDistEvalHook if distributed else EvalHook
+        eval_hook = OccDistEvalHook if distributed else OccEvalHook        # Hao: 实现单卡钩子
         runner.register_hook(eval_hook(val_dataloader, **eval_cfg))
 
     # user-defined hooks

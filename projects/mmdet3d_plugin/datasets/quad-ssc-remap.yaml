@@ -1,0 +1,164 @@
+# This file is covered by the LICENSE file in the root of this project.
+nbr_classes: 7
+#grid_dims: [64, 8, 64]  # (W, H, D)
+grid_dims: [128, 16, 128]  # (W, H, D)
+labels:
+  0 : "unlabeled"   # unlabel也就是0表示雷达扫到但是标签没标注的地方，空体素是255表示没有东西，这是两种情况
+  1 : "vehicle"         # car 转为vehicle
+  2 : "bus"
+  3 : "bicycle"
+  4 : "person"
+  5 : "road"
+  6 : "parking"
+  7 : "sidewalk"
+  8 : "building"
+  9 : "fence"
+  10 : "vegetation"
+  11: "trunk"
+  12: "terrain"
+  13: "pole"
+  14: "traffic sign"
+color_map: # bgr
+  0 : [0, 0, 0]
+  1 : [245, 150, 100]
+  2 : [250, 80, 100]
+  3 : [245, 230, 100]
+  4 : [30, 30, 255]
+  5 : [255, 0, 255]
+  6 : [255, 150, 255]
+  7 : [75, 0, 75]
+  8 : [0, 200, 255]
+  9 : [50, 120, 255]
+  10 : [0, 175, 0]
+  11: [0, 60, 135]
+  12: [80, 240, 150]
+  13: [150, 240, 255]
+  14: [0, 0, 255]
+content: # [new finally mapped] as a ratio with the total number of points
+  0: 0.2345460696
+  1: 0.0004825479
+  2: 0.0097090973
+  3: 0.4448292373
+  4: 0.0619459724
+  5: 0.1258040592
+  6: 0.0684332385
+#content: # [new finally label] as a ratio with the total number of points
+#  0: 0.2345460696
+#  1: 0.0004825479
+#  2: 0.0017157311
+#  3: 0.0042672306
+#  4: 0.0097090973
+#  5: 0.4448292373
+#  6: 0.0000226800
+#  7: 0.0288129059
+#  8: 0.0619459724
+#  9: 0.0159615542
+#  10: 0.1258040592
+#  11: 0.0008062148
+#  12: 0.0684332385
+#  13: 0.0020490271
+#  14: 0.0006144341
+#content: # [finally label] as a ratio with the total number of points
+#  0: 0.0006615624
+#  1: 0.0024248017
+#  2: 0.0060261518
+#  3: 0.0136121974
+#  4: 0.5741792251
+#  5: 0.0000285022
+#  6: 0.0395622548
+#  7: 0.0825246756
+#  8: 0.0216429794
+#  9: 0.1590175932
+#  10: 0.0011394443
+#  11: 0.0954213448
+#  12: 0.0028914068
+#  13: 0.0008678607
+
+#content: # [static label] as a ratio with the total number of points
+#  0: 0.0164184757
+#  1: 0.0017904658
+#  2: 0.0051282455
+#  3: 0.0103673846
+#  4: 0.5799138270
+#  5: 0.0000216047
+#  6: 0.0329431752
+#  7: 0.0737034694
+#  8: 0.0196686370
+#  9: 0.1629676230
+#  10: 0.0008645747
+#  11: 0.0932367657
+#  12: 0.0022065012
+#  13: 0.0007692502
+# classes that are indistinguishable from single scan or inconsistent in
+# ground truth are mapped to their closest equivalent
+learning_map: # consider bus map to car
+  0 : 255
+  1 : 1
+  2 : 255
+  3 : 255
+  4 : 2
+  5 : 3
+  6 : 255
+  7 : 255
+  8 : 4
+  9 : 255
+  10: 5
+  11: 255
+  12: 6
+  13: 255
+  14: 255
+  255: 0
+learning_map_inv: # inverse of previous map
+  0 : 0
+  1 : 1
+  2 : 4
+  3 : 5
+  4 : 8
+  5 : 10
+  6 : 12
+learning_ignore: # Ignore classes
+  0 : True
+  1 : False
+  2 : False
+  3 : False
+  4 : False
+  5 : False
+  6 : False
+  7 : False
+  8 : False
+  9 : False
+  10: False
+  11: False
+  12: False
+  13: False
+  14: False
+split: # sequence numbers
+  train:
+    - 2024-06-20-20-49-54
+    - 2024-06-20-20-52-21
+    - 2024-06-20-21-05-40
+    - 2024-06-20-21-19-23
+    - 2024-06-20-21-15-21
+    - 2024-06-20-21-05-05
+    - 2024-06-20-21-11-28
+  valid:
+    - 2024-06-20-21-16-11
+    - 2024-06-20-21-08-40
+    - 2024-06-20-20-46-59
+  test:
+    - NA
+### data split：
+## train
+#2024-06-20-20-49-54 5151frame day
+#2024-06-20-20-52-21 4837frame day
+#2024-06-20-21-05-40 4707frame day
+#2024-06-20-21-19-23 1862frame night
+#2024-06-20-21-15-21 1347frame day
+#2024-06-20-21-05-05 1197frame dawn
+#2024-06-20-21-11-28 854frame dawn
+#Sum 19,955frame
+## valid
+#2024-06-20-21-16-11 2637frame day
+#2024-06-20-21-08-40 824frame dawn
+#2024-06-20-20-46-59 374frame night
+#Sum 3,835frame

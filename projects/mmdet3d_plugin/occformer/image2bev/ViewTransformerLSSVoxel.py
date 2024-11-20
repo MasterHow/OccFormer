@@ -86,7 +86,7 @@ class ViewTransformerLiftSplatShootVoxel(ViewTransformerLSSBEVDepth):
         batch_ix = torch.cat([torch.full([Nprime // B, 1], ix, device=x.device, dtype=torch.long) for ix in range(B)])
         geom_feats = torch.cat((geom_feats, batch_ix), 1)
 
-        # filter out points that are outside box
+        # filter out points that are outside box        # todo 根据数据集的不同调整bev网格的上下限 0: x 1: y 2: h
         kept = (geom_feats[:, 0] >= 0) & (geom_feats[:, 0] < self.nx[0]) \
                & (geom_feats[:, 1] >= 0) & (geom_feats[:, 1] < self.nx[1]) \
                & (geom_feats[:, 2] >= 0) & (geom_feats[:, 2] < self.nx[2])

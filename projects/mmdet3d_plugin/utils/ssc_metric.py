@@ -12,16 +12,23 @@ import pdb
 from torchmetrics.metric import Metric
 
 class SSCMetrics(Metric):
-    def __init__(self, class_names=None, compute_on_step=False):
-        super().__init__(compute_on_step=compute_on_step)
+    def __init__(self, class_names=None, compute_on_step=False, quad_ssc=False):
+        # super().__init__(compute_on_step=compute_on_step)
+        super().__init__()      # Hao: 可能与torchmetrics的版本有关.
         
         if class_names is None:
-            class_names = [
-                'unlabeled', 'car', 'bicycle', 'motorcycle', 'truck', 'other-vehicle',
-                'person', 'bicyclist', 'motorcyclist', 'road', 'parking', 'sidewalk',
-                'other-ground', 'building', 'fence', 'vegetation', 'trunk', 'terrain',
-                'pole', 'traffic-sign'
-            ]
+            if quad_ssc:
+                class_names = [
+                    'unlabeled', 'vehicle', 'person', 'road', 'building', 'vegetation',
+                    'terrain',
+                ]
+            else:
+                class_names = [
+                    'unlabeled', 'car', 'bicycle', 'motorcycle', 'truck', 'other-vehicle',
+                    'person', 'bicyclist', 'motorcyclist', 'road', 'parking', 'sidewalk',
+                    'other-ground', 'building', 'fence', 'vegetation', 'trunk', 'terrain',
+                    'pole', 'traffic-sign'
+                ]
         
         self.class_names = class_names
         self.n_classes = len(class_names)
