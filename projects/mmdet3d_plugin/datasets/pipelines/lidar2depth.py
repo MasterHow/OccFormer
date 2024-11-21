@@ -48,6 +48,9 @@ class CreateDepthFromLiDAR(object):
             lidar_points = torch.from_numpy(lidar_points[:, :3]).float()
 
         elif self.dataset == 'quad':
+            # 获取config中输入的图像尺寸
+            h, w = results['img_inputs'][0].shape[-2:]
+
             # 确保路径分隔符使用的是操作系统的格式
             img_filename = results['img_filename'][0]
             img_filename = os.path.normpath(img_filename)
@@ -92,7 +95,8 @@ class CreateDepthFromLiDAR(object):
 
             # 执行投影
             projected_points, corresponding_lidar_points = project_lidar_to_image(
-                lidar_points.numpy(), R_lidar_to_camera, T_lidar_to_camera, inv_mapx, inv_mapy, o_cata
+                lidar_points.numpy(), R_lidar_to_camera, T_lidar_to_camera, inv_mapx, inv_mapy, o_cata, unfold_img_h=h,
+                unfold_img_w=w
             )
 
             # 将投影点转换为 torch 张量

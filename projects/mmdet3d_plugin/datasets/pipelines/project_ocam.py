@@ -106,7 +106,7 @@ def world2cam_LiDAR(point2D, point3D, myocam_model):
     point2D[0] = x * c + y * d + xc
     point2D[1] = x * e + y + yc
 
-def project_lidar_to_image(lidar_points, R, T, mapx, mapy, myocam_model):
+def project_lidar_to_image(lidar_points, R, T, mapx, mapy, myocam_model, unfold_img_h, unfold_img_w):
     projected_points = []
     corresponding_lidar_points = []
 
@@ -121,9 +121,8 @@ def project_lidar_to_image(lidar_points, R, T, mapx, mapy, myocam_model):
         if 0 <= u < myocam_model.width and 0 <= v < myocam_model.height:
             unfolded_u = mapx[v, u]
             unfolded_v = mapy[v, u]
-            # # Flip the coordinates
-            # unfolded_u = mapx.shape[1] - unfolded_u
-            if 0 <= unfolded_u < mapx.shape[1] and 0 <= unfolded_v < mapx.shape[0]:
+            # if 0 <= unfolded_u < mapx.shape[1] and 0 <= unfolded_v < mapx.shape[0]:     # 这里有bug 应该和展开图像的长宽比较
+            if 0 <= unfolded_u < unfold_img_w and 0 <= unfolded_v < unfold_img_h:
                 projected_points.append((int(unfolded_u), int(unfolded_v)))
                 corresponding_lidar_points.append(point)
 
