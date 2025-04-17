@@ -28,17 +28,17 @@ import numpy as np
 # trunk: 93682
 # parking: 2341
 
-quadssc_class_frequencies = np.array(       # new finally mapped
-    [
-        713501325,  # empty
-        31872,    # car
-        641280,    # person
-        29380702,   # road
-        4091494,    # building
-        8309282,   # vegetation
-        4519974,   # terrain
-    ]
-)
+# quadssc_class_frequencies = np.array(       # new finally mapped
+#     [
+#         713501325,  # empty
+#         31872,    # car
+#         641280,    # person
+#         29380702,   # road
+#         4091494,    # building
+#         8309282,   # vegetation
+#         4519974,   # terrain
+#     ]
+# )
 # unlabeled: 15491626
 # empty: 713501325
 # bus: 113323
@@ -55,6 +55,18 @@ quadssc_class_frequencies = np.array(       # new finally mapped
 # car: 31872
 # trunk: 53250
 # parking: 1498
+
+quadssc_class_frequencies = np.array(       # final voxel
+    [
+        609570603,  # empty
+        1395478,    # car
+        3230642,    # person
+        81007847,   # road
+        21662331,    # building
+        35325985,   # vegetation
+        12151107,   # terrain
+    ]
+)
 
 
 kitti_class_names = [

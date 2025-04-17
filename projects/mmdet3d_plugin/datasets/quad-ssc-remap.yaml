@@ -1,7 +1,7 @@
 # This file is covered by the LICENSE file in the root of this project.
 nbr_classes: 7
-#grid_dims: [64, 8, 64]  # (W, H, D)
-grid_dims: [128, 16, 128]  # (W, H, D)
+grid_dims: [64, 8, 64]  # (W, H, D)
+#grid_dims: [128, 16, 128]  # (W, H, D)
 labels:
   0 : "unlabeled"   # unlabel也就是0表示雷达扫到但是标签没标注的地方，空体素是255表示没有东西，这是两种情况
   1 : "vehicle"         # car 转为vehicle
@@ -58,37 +58,6 @@ content: # [new finally mapped] as a ratio with the total number of points
 #  12: 0.0684332385
 #  13: 0.0020490271
 #  14: 0.0006144341
-#content: # [finally label] as a ratio with the total number of points
-#  0: 0.0006615624
-#  1: 0.0024248017
-#  2: 0.0060261518
-#  3: 0.0136121974
-#  4: 0.5741792251
-#  5: 0.0000285022
-#  6: 0.0395622548
-#  7: 0.0825246756
-#  8: 0.0216429794
-#  9: 0.1590175932
-#  10: 0.0011394443
-#  11: 0.0954213448
-#  12: 0.0028914068
-#  13: 0.0008678607
-
-#content: # [static label] as a ratio with the total number of points
-#  0: 0.0164184757
-#  1: 0.0017904658
-#  2: 0.0051282455
-#  3: 0.0103673846
-#  4: 0.5799138270
-#  5: 0.0000216047
-#  6: 0.0329431752
-#  7: 0.0737034694
-#  8: 0.0196686370
-#  9: 0.1629676230
-#  10: 0.0008645747
-#  11: 0.0932367657
-#  12: 0.0022065012
-#  13: 0.0007692502
 # classes that are indistinguishable from single scan or inconsistent in
 # ground truth are mapped to their closest equivalent
 learning_map: # consider bus map to car

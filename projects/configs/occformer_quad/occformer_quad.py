@@ -315,8 +315,8 @@ test_config=dict(
 )
 
 data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=4,
+    samples_per_gpu=4,  # 1
+    workers_per_gpu=8,  # 4
     train=dict(
         type=dataset_type,
         data_root=data_root,

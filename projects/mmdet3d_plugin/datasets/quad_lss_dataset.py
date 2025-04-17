@@ -128,14 +128,16 @@ class CustomQuadLssDataset(SemanticKITTIDataset):
             proj_matrix_3 = P3 @ T_velo_2_cam
 
             # voxel_base_path = os.path.join(self.data_root, "sequences", sequence, "new_static_label")
-            voxel_base_path = os.path.join(self.data_root, "sequences", sequence, "new_finally_label")
+            # voxel_base_path = os.path.join(self.data_root, "sequences", sequence, "new_finally_label")
+            voxel_base_path = os.path.join(self.data_root, "sequences", sequence, "voxel_final")
             img_base_path = os.path.join(self.data_root, "sequences", sequence)
 
             # 根据加载模式确定文件路径
             if self.load_continuous:
                 id_base_path = os.path.join(self.data_root, "sequences", sequence, 'images_unfold', '*.jpg')
             else:
-                id_base_path = os.path.join(self.data_root, "sequences", sequence, 'new_static_label', '*.npy')
+                # id_base_path = os.path.join(self.data_root, "sequences", sequence, 'new_static_label', '*.npy')
+                id_base_path = os.path.join(self.data_root, "sequences", sequence, 'voxel_final', '*.npy')
 
             # 获取文件列表，并进行排序
             id_paths = sorted(glob.glob(id_base_path))
