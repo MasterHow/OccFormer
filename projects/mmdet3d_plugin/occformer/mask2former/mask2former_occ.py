@@ -20,6 +20,7 @@ from .base.anchor_free_head import AnchorFreeHead
 from .base.maskformer_head import MaskFormerHead
 from projects.mmdet3d_plugin.utils.semkitti import semantic_kitti_class_frequencies
 from projects.mmdet3d_plugin.utils.quadssc import quadssc_class_frequencies
+from projects.mmdet3d_plugin.utils.h3o import h3o_class_frequencies
 import pdb
 
 
@@ -131,21 +132,32 @@ class Mask2FormerOccHead(MaskFormerHead):
             self.importance_sample_ratio = self.train_cfg.get(
                 'importance_sample_ratio', 0.75)
 
-        # create class_weights for semantic_kitti
+        # create class_weights based on dataset type
         self.class_weight = loss_cls.class_weight
-        # kitti_class_weights = 1 / np.log(semantic_kitti_class_frequencies)
-        # Hao: todo
-        kitti_class_weights = 1 / np.log(quadssc_class_frequencies)
-        norm_kitti_class_weights = kitti_class_weights / kitti_class_weights[0]
-        norm_kitti_class_weights = norm_kitti_class_weights.tolist()
+        
+        # Determine dataset type based on number of classes
+        if self.num_classes == 11:  # H3O dataset
+            class_weights = 1 / np.log(h3o_class_frequencies)
+        elif self.num_classes == 7:  # Quad dataset
+            class_weights = 1 / np.log(quadssc_class_frequencies)
+        else:  # Default to semantic kitti
+            class_weights = 1 / np.log(semantic_kitti_class_frequencies)
+        
+        norm_class_weights = class_weights / class_weights[0]
+        norm_class_weights = norm_class_weights.tolist()
         # append the class_weight for background
-        norm_kitti_class_weights.append(self.class_weight[-1])
-        self.class_weight = norm_kitti_class_weights
+        norm_class_weights.append(self.class_weight[-1])
+        self.class_weight = norm_class_weights
         
         loss_cls.class_weight = self.class_weight
         
-        # computing sampling weight        
-        sample_weights = 1 / semantic_kitti_class_frequencies
+        # computing sampling weight based on dataset type
+        if self.num_classes == 11:  # H3O dataset
+            sample_weights = 1 / h3o_class_frequencies
+        elif self.num_classes == 7:  # Quad dataset
+            sample_weights = 1 / quadssc_class_frequencies
+        else:  # Default to semantic kitti
+            sample_weights = 1 / semantic_kitti_class_frequencies
         sample_weights = sample_weights / sample_weights.min()
         self.baseline_sample_weights = sample_weights
         self.sample_weight_gamma = sample_weight_gamma

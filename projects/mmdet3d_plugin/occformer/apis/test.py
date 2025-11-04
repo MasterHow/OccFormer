@@ -35,8 +35,18 @@ def custom_single_gpu_test(model, data_loader, show=False, out_dir=None, show_sc
     
     # evaluate ssc
     is_semkitti = hasattr(dataset, 'camera_used')
-    # ssc_metric = SSCMetrics().cuda()
-    ssc_metric = SSCMetrics(quad_ssc=True).cuda()
+    is_h3o = hasattr(dataset, 'split_mode') and dataset.split_mode in ['homo', 'heter']
+    
+    if is_h3o:
+        # H3O dataset has 11 classes
+        h3o_class_names = [
+            'empty', 'road', 'sidewalk', 'building', 'vegetation', 'car', 'truck', 
+            'bus', 'two_wheeler', 'person', 'pole'
+        ]
+        ssc_metric = SSCMetrics(class_names=h3o_class_names).cuda()
+    else:
+        # Default to quad_ssc for other datasets
+        ssc_metric = SSCMetrics(quad_ssc=True).cuda()
     logger.info(parameter_count_table(model, max_depth=4))
     
     batch_size = 1
@@ -129,9 +139,19 @@ def custom_multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False, pr
         prog_bar = mmcv.ProgressBar(len(dataset))
         
     ssc_results = []
-    # ssc_metric = SSCMetrics().cuda()
-    ssc_metric = SSCMetrics(quad_ssc=True).cuda()
     is_semkitti = hasattr(dataset, 'camera_used')
+    is_h3o = hasattr(dataset, 'split_mode') and dataset.split_mode in ['homo', 'heter']
+    
+    if is_h3o:
+        # H3O dataset has 11 classes
+        h3o_class_names = [
+            'empty', 'road', 'sidewalk', 'building', 'vegetation', 'car', 'truck', 
+            'bus', 'two_wheeler', 'person', 'pole'
+        ]
+        ssc_metric = SSCMetrics(class_names=h3o_class_names).cuda()
+    else:
+        # Default to quad_ssc for other datasets
+        ssc_metric = SSCMetrics(quad_ssc=True).cuda()
     
     time.sleep(2)  # This line can prevent deadlock problem in some cases.
     

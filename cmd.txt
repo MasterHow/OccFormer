@@ -11,7 +11,7 @@ ssh -p 40612 -NL 8008:localhost:9009 root@ssh.atom.rk.supremind.info
 # 打开tb
 source /opt/conda/bin/activate
 cd /workspace/mnt/storage/shihao/MyCode-02/OccFormer/work_dirs
-tensorboard --logdir='./' --port=9009
+tensorboard --logdir='./' --port=8008
 http://127.0.0.1:8008/
 
 # 上传数据
@@ -148,6 +148,8 @@ python train.py --config projects/configs/occformer_quad/occformer_quad.py
 # test Quad
 python test.py projects/configs/occformer_quad/occformer_quad.py work_dirs/occformer_quad/best_semkitti_SSC_mIoU_epoch_6.pth --eval=bbox
 
+# 训练H3O
+python train.py --config projects/configs/occformer_h3o/occformer_h3o.py
 
 
 
