@@ -1,0 +1,74 @@
+# H3O数据集v4重映射策略 (11类)
+# 基于v3版本，分离车辆类别，合并交通设施
+# 
+# 分组策略：
+#  0: empty (空/未标注: unlabeled/sky/water/railtrack/train/static/dynamic/other/bridge/guardrail/ground)
+#  1: road (道路相关: roads/roadline)
+#  2: sidewalk (人行道)
+#  3: building (建筑结构: building/wall/fence)
+#  4: vegetation (植被: vegetation/terrain)
+#  5: car (小汽车: car)
+#  6: truck (卡车: truck)
+#  7: bus (公交车: bus)
+#  8: two_wheeler (两轮车: motorcycle/bicycle)
+#  9: person (行人: pedestrian/rider)
+#  10: pole (交通设施: pole/trafficlight/trafficsign)
+
+learning_map:
+  0: 0   # Unlabeled -> empty
+  1: 1   # Roads -> road
+  2: 2   # SideWalks -> sidewalk
+  3: 3   # Building -> building
+  4: 3   # Wall -> building (合并到building)
+  5: 3   # Fence -> building (合并到building)
+  6: 10  # Pole -> pole
+  7: 10  # TrafficLight -> pole (合并到pole)
+  8: 10  # TrafficSign -> pole (合并到pole)
+  9: 4   # Vegetation -> vegetation
+  10: 4  # Terrain -> vegetation (合并到植被)
+  11: 0  # Sky -> empty (体素中基本不会出现)
+  12: 9  # Pedestrian -> person
+  13: 9  # Rider -> person
+  14: 5   # Car -> car
+  15: 6   # Truck -> truck
+  16: 7   # Bus -> bus
+  17: 0   # Train -> empty (映射到empty)
+  18: 8   # Motorcycle -> two_wheeler
+  19: 8   # Bicycle -> two_wheeler
+  20: 0   # Static -> empty (映射到empty)
+  21: 0   # Dynamic -> empty (映射到empty)
+  22: 0   # Other -> empty (映射到empty)
+  23: 0   # Water -> empty (体素中基本不会出现)
+  24: 1   # RoadLine -> road
+  25: 0   # Ground -> empty (映射到empty)
+  26: 0   # Bridge -> empty (映射到empty)
+  27: 0   # RailTrack -> empty (体素中基本不会出现)
+  28: 0   # GuardRail -> empty (映射到empty)
+
+# 类别名称映射
+class_names:
+  0: "empty"
+  1: "road"
+  2: "sidewalk"
+  3: "building"
+  4: "vegetation"
+  5: "car"
+  6: "truck"
+  7: "bus"
+  8: "two_wheeler"
+  9: "person"
+  10: "pole"
+
+# 类别颜色映射 (RGB)
+class_colors:
+  0: [0, 0, 0]        # empty: 黑色
+  1: [128, 64, 128]   # road: 紫色
+  2: [244, 35, 232]   # sidewalk: 粉色
+  3: [70, 70, 70]     # building: 深灰
+  4: [107, 142, 35]  # vegetation: 绿色
+  5: [0, 0, 142]     # car: 深蓝
+  6: [0, 0, 70]      # truck: 更深的蓝色
+  7: [0, 60, 100]    # bus: 蓝绿色
+  8: [0, 0, 230]     # two_wheeler: 蓝色
+  9: [220, 20, 60]  # person: 红色
+  10: [153, 153, 153] # pole: 灰色
